@@ -1,0 +1,85 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #000000;
+}
+
+#game-container {
+  width: 512px;
+  height: 512px;
+  border: 2px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  // width: 100%;
+}
+
+.palette {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.palette div {
+  cursor: pointer;
+  padding: 5px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.palette div img {
+  width: 32px;
+  height: 32px;
+}
+
+.palette div.selected {
+  border-color: rgb(186, 85, 211);
+}
+
+.button {
+  background-color: rgb(186, 85, 211) !important;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  // width: 100%;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.button:hover {
+  background-color: rgb(109, 49, 124) !important;
+  // border: 1px solid rgb(186, 85, 211) !important;
+  // color: rgb(186, 85, 211) !important;
+}
+
+.button:disabled {
+  background-color: rgb(73, 32, 83) !important;
+  cursor: not-allowed;
+}
+
+.spritePosition {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}

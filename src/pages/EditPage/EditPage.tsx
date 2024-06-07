@@ -1,17 +1,21 @@
 // @ts-nocheck
 import React, { useRef, useEffect, useState } from 'react';
 import Phaser from 'phaser';
+import { notification } from 'antd';
 import styles from './styles.module.scss';
 
-const Game = () => {
+const EditPage = () => {
   const phaserRef = useRef(null);
-  const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+  const [selectedBlock, setSelectedBlock] = useState('platform');
+  const [mapData, setMapData] = useState([]);
   const [canMoveSprite, setCanMoveSprite] = useState(true);
+  const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+  const [canSave, setCanSave] = useState(false); // State variable to track if the player can save the map
 
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
-      width: 1024,
+      width: 512,
       height: 512,
       parent: 'game-container',
       physics: {
@@ -40,31 +44,24 @@ const Game = () => {
     this.load.image('platform', 'src/sprites/platform_tile.png');
     this.load.image('flag', 'src/sprites/flag_tile.png');
     this.load.image('sky', 'src/sprites/sky_tile.png');
+    this.load.image('speed', 'src/sprites/speed_tile.png');
     this.load.spritesheet('boing', 'src/sprites/boing_sheet.png', { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('fire', 'src/sprites/fire_sheet.png', { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('death', 'src/sprites/death_anim.png', { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('idle', 'src/sprites/knight_idle.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.text('map', 'src/map2.txt');
-    this.load.text('map2', 'src/map.txt');
+    this.load.text('map', 'src/map.txt');
   };
 
   const create = function () {
     const mapText = this.cache.text.get('map');
-    const mapData = mapText.split('\n').map(row => row.replace(/[\[\],'\r]/g, '').split(' '));
-    const mapText1 = this.cache.text.get('map2');
-    const mapData1 = mapText1.split('\n').map(row => row.replace(/[\[\],'\r]/g, '').split(' '));
+    const initialMapData = mapText.split('\n').map(row => row.replace(/[\[\],'\r]/g, '').split(' '));
+    setMapData(initialMapData);
 
     const platform = this.physics.add.staticGroup();
 
     for (let r = 0; r < 16; r++) {
       for (let c = 0; c < 16; c++) {
         new Block(this, (c * 32) + 16, (r * 32) + 16, 'sky');
-      }
-    }
-
-    for (let r = 0; r < 16; r++) {
-      for (let c = 0; c < 16; c++) {
-        new Block(this, (c * 32) + 512 + 16, (r * 32) + 16, 'sky');
       }
     }
 
@@ -96,11 +93,10 @@ const Game = () => {
       repeat: -1
     });
     player.sprite.anims.play('idle');
-    for (let row = 0; row < mapData.length; row++) {
-      for (let col = 0; col < mapData[row].length; col++) {
-        const tile = mapData[row][col];
-        const x = col * 32 + 16;
-        const y = row * 32 + 16;
+    initialMapData.forEach((row, rowIndex) => {
+      row.forEach((tile, colIndex) => {
+        const x = colIndex * 32 + 16;
+        const y = rowIndex * 32 + 16;
         if (tile === 'p') {
           platform.create(x, y, 'platform').setScale(1).refreshBody();
           this.physics.add.collider(player.sprite, platform);
@@ -110,36 +106,14 @@ const Game = () => {
           fire.sprite.anims.play('fire');
         } else if (tile === 'E') {
           const flag = new Block(this, x, y, 'flag');
-          this.physics.add.collider(player.sprite, flag.sprite, next_chunk, null, this);
+          this.physics.add.collider(player.sprite, flag.sprite, reachEnd, null, this);
         } else if (tile === 'J') {
           const boing = new Block(this, x, y, 'boing');
           this.physics.add.collider(player.sprite, boing.sprite, jump_boing, null, this);
           boing.sprite.anims.play('slime');
         }
-      }
-    }
-    for (let row = 0; row < mapData1.length; row++) {
-      for (let col = 0; col < mapData1[row].length; col++) {
-        const tile = mapData1[row][col];
-        const x1 = col * 32 + 512 + 16;
-        const y1 = row * 32 + 16;
-        if (tile === 'p') {
-          platform.create(x1, y1, 'platform').setScale(1).refreshBody();
-          this.physics.add.collider(player.sprite, platform);
-        } else if (tile === 'F') {
-          const fire = new Block(this, x1, y1, 'fire');
-          this.physics.add.collider(player.sprite, fire.sprite, die, null, this);
-          fire.sprite.anims.play('fire');
-        } else if (tile === 'E') {
-          const flag = new Block(this, x1, y1, 'flag');
-          this.physics.add.collider(player.sprite, flag.sprite, first_chunk, null, this);
-        } else if (tile === 'J') {
-          const boing = new Block(this, x1, y1, 'boing');
-          this.physics.add.collider(player.sprite, boing.sprite, jump_boing, null, this);
-          boing.sprite.anims.play('slime');
-        }
-      }
-    }
+      });
+    });
 
     const cursors = this.input.keyboard.createCursorKeys();
     this.wasd = this.input.keyboard.addKeys({
@@ -147,6 +121,12 @@ const Game = () => {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+
+    this.input.on('pointerdown', (pointer) => {
+      const x = Math.floor(pointer.x / 32) * 32 + 16;
+      const y = Math.floor(pointer.y / 32) * 32 + 16;
+      placeBlock(this, x, y, selectedBlock);
     });
 
     this.update = function () {
@@ -180,18 +160,26 @@ const Game = () => {
       }, [], this);
     }
 
-    function next_chunk(player, flag) {
-      player.setX(16 + 512);
-      player.setY(460);
-    }
-
-    function first_chunk(player, flag) {
+    function reachEnd(player, flag) {
       player.setX(16);
       player.setY(460);
+      setCanSave(true); // Enable the Save button
     }
 
     function jump_boing(player, boing) {
       player.setVelocityY(-400 * 1.2);
+    }
+
+    function placeBlock(scene, x, y, type) {
+      const col = Math.floor((x - 16) / 32);
+      const row = Math.floor((y - 16) / 32);
+
+      if (mapData[row] && mapData[row][col]) {
+        mapData[row][col] = type[0]; // 'p', 'F', 'E', 'J'
+        setMapData([...mapData]);
+      }
+
+      new Block(scene, x, y, type);
     }
   };
 
@@ -221,11 +209,45 @@ const Game = () => {
     }
   }
 
+  const saveMap = () => {
+    // Logic to save the mapData, perhaps send it to the server or store locally
+    console.log('Map saved', mapData);
+    notification.success({
+      message: 'Success',
+      description: 'Map saved successfully!',
+      placement: 'bottomRight',
+    });
+  };
+
+  const cancelEdit = () => {
+    window.location.reload(); // Reload the page
+  };
+
   return (
     <div className={styles.wrap}>
       <div id="game-container" className="game-container"></div>
+      <div className={styles.controls}>
+        <div className={styles.palette}>
+          <div onClick={() => setSelectedBlock('platform')} className={selectedBlock === 'platform' ? styles.selected : ''}>
+            <img src="src/sprites/platform_tile.png" alt="Platform" />
+          </div>
+          <div onClick={() => setSelectedBlock('fire')} className={selectedBlock === 'fire' ? styles.selected : ''}>
+            <img src="src/sprites/fire_tile.gif" alt="Fire" />
+          </div>
+          <div onClick={() => setSelectedBlock('speed')} className={selectedBlock === 'speed' ? styles.selected : ''}>
+            <img src="src/sprites/speed_tile.gif" alt="Speed" />
+          </div>
+          <div onClick={() => setSelectedBlock('boing')} className={selectedBlock === 'boing' ? styles.selected : ''}>
+            <img src="src/sprites/boing_tile.gif" alt="Boing" />
+          </div>
+        </div>
+        <div className={styles.wrapper}>
+          <button className={styles.button} onClick={saveMap} disabled={!canSave}>Save</button>
+          <button className={styles.button} onClick={cancelEdit}>Give up</button>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default Game;
+export default EditPage;

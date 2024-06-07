@@ -4,3 +4,21 @@
   align-items: center;
   justify-content: center;
 }
+
+.game-container {
+  position: relative;
+  width: 1024px;
+  height: 512px;
+}
+
+.map {
+  position: absolute;
+  top: 0;
+  width: 512px;
+  height: 512px;
+  overflow: hidden;
+}
+
+.blur {
+  filter: blur(8px);
+}

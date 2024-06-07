@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { ConnectButton, useConnection } from "arweave-wallet-kit";
-import GamePage from './pages/GamePage/GamePage';
+import EditPage from './pages/EditPage/EditPage';
 import Leaderboard from './pages/Leaderboard/Leaderboard';
 import { ArConnect } from 'arweavekit/auth';
 import styles from './App.module.scss';
 import Game from './pages/Game/Game';
-import Edit from './pages/Edit/Edit';
 
 function App() {
     const [isInstalled, setIsInstalled] = useState(false);
@@ -29,11 +28,10 @@ function App() {
             <div>
                 <div className={styles.wrap}>
                     <header className={styles.header}>
-                        <h1>BlockRun</h1>
+                        <h1>LockBlock</h1>
                         <nav>
                             <Link to="/">Home</Link>
-                            <Link to="/leaderboard">Leaderboard</Link>
-                            <Link to="/game">Game</Link>
+                            <Link to="/stats">Statistics</Link>
                             <Link to="/edit">Edit</Link>
                         </nav>
                         <ConnectButton
@@ -45,10 +43,9 @@ function App() {
                     {isInstalled ? (
                         connected ? (
                             <Routes>
-                                <Route path="/" element={<GamePage />} />
-                                <Route path="/leaderboard" element={<Leaderboard />} />
-                                <Route path="/game" element={<Game />} />
-                                <Route path="/edit" element={<Edit />} />
+                                <Route path="/" element={<Game />} />
+                                <Route path="/stats" element={<Leaderboard />} />
+                                <Route path="/edit" element={<EditPage />} />
                             </Routes>
                         ) : (
                             <></>
