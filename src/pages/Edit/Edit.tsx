@@ -165,12 +165,10 @@ const Edit = () => {
   }
 
   const saveMap = () => {
-    // Logic to save the mapData, perhaps send it to the server or store locally
     console.log('Map saved', mapData);
   };
 
   const cancelEdit = () => {
-    // Logic to cancel the edit, perhaps reload the original map
     console.log('Edit cancelled');
   };
 

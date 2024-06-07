@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 
-// Mock data for leaderboard; replace with actual data fetching logic
 const mockLeaderboardData = [
   { player: 'madvil2', time: '0:15', deaths: 115 },
   { player: 'owl', time: '3:12', deaths: 2 },
@@ -19,7 +18,6 @@ const mockLeaderboardData = [
   { player: 'StealthyFox', time: '2:15', deaths: 5 }
 ];
 
-// Mock data for personal stats; replace with actual data fetching logic
 const mockPersonalStats = {
   player: 'madvil2',
   time: '0:15',
@@ -37,7 +35,6 @@ const Leaderboard = () => {
   const [personalStats, setPersonalStats] = useState(mockPersonalStats);
 
   useEffect(() => {
-    // Replace this with actual data fetching logic
     setLeaderboard(mockLeaderboardData);
     setPersonalStats(mockPersonalStats);
   }, []);

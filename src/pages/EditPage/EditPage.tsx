@@ -10,7 +10,7 @@ const EditPage = () => {
   const [mapData, setMapData] = useState([]);
   const [canMoveSprite, setCanMoveSprite] = useState(true);
   const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
-  const [canSave, setCanSave] = useState(false); // State variable to track if the player can save the map
+  const [canSave, setCanSave] = useState(false);
 
   useEffect(() => {
     const config = {
@@ -69,19 +69,19 @@ const EditPage = () => {
 
     this.anims.create({
       key: 'slime',
-      frames: this.anims.generateFrameNumbers('boing', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frames: this.anims.generateFrameNumbers('boing', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
     });
     this.anims.create({
       key: 'fire',
-      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
     });
     this.anims.create({
       key: 'death',
-      frames: this.anims.generateFrameNumbers('death', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frames: this.anims.generateFrameNumbers('death', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: 0 // Play once
     });
@@ -152,7 +152,7 @@ const EditPage = () => {
       player.setVelocityX(0);
       player.setVelocityY(0);
       player.anims.play('death');
-      player.scene.time.delayedCall(1000, () => { // Delay for 1 second (1000ms)
+      player.scene.time.delayedCall(1000, () => {
         player.setX(16);
         player.setY(460);
         player.anims.play('idle');
@@ -163,7 +163,7 @@ const EditPage = () => {
     function reachEnd(player, flag) {
       player.setX(16);
       player.setY(460);
-      setCanSave(true); // Enable the Save button
+      setCanSave(true);
     }
 
     function jump_boing(player, boing) {
@@ -191,7 +191,7 @@ const EditPage = () => {
       this.sprite.displayWidth = 16;
       this.sprite.displayHeight = 16;
       this.sprite.setScale(1);
-      this.canMove = true; // Add canMove property
+      this.canMove = true;
     }
 
     jump(strength) {
@@ -210,7 +210,6 @@ const EditPage = () => {
   }
 
   const saveMap = () => {
-    // Logic to save the mapData, perhaps send it to the server or store locally
     console.log('Map saved', mapData);
     notification.success({
       message: 'Success',
@@ -220,7 +219,7 @@ const EditPage = () => {
   };
 
   const cancelEdit = () => {
-    window.location.reload(); // Reload the page
+    window.location.reload();
   };
 
   return (
