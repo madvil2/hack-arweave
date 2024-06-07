@@ -38,10 +38,12 @@ const Game = () => {
   const preload = function () {
     this.load.image('player', 'src/sprites/player_tile.png');
     this.load.image('platform', 'src/sprites/platform_tile.png');
-    this.load.image('fire', 'src/sprites/fire_tile.gif');
     this.load.image('flag', 'src/sprites/flag_tile.png');
     this.load.image('sky', 'src/sprites/sky_tile.png');
-    this.load.image('boing', 'src/sprites/boing_tile.gif');
+    this.load.spritesheet('boing', 'src/sprites/boing_sheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('fire', 'src/sprites/fire_sheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('death', 'src/sprites/death_anim.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('idle', 'src/sprites/knight_idle.png', { frameWidth: 32, frameHeight: 32 });
     this.load.text('map', 'src/map.txt');
   };
 
@@ -59,23 +61,51 @@ const Game = () => {
 
     const player = new Player(this, 16, 464);
 
+    this.anims.create({
+      key: 'slime',
+      frames: this.anims.generateFrameNumbers('boing', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'fire',
+      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'death',
+      frames: this.anims.generateFrameNumbers('death', { start: 0, end: 3 }), // Adjust start and end based on your spritesheet
+      frameRate: 10,
+      repeat: 0 // Play once
+    });
+
+    this.anims.create({
+      key: 'idle',
+      frames: this.anims.generateFrameNumbers('idle', { start: 0, end: 5 }), // Adjust start and end based on your spritesheet
+      frameRate: 10,
+      repeat: -1
+    });
+    player.sprite.anims.play('idle');
     for (let row = 0; row < mapData.length; row++) {
       for (let col = 0; col < mapData[row].length; col++) {
         const tile = mapData[row][col];
         const x = col * 32 + 16;
         const y = row * 32 + 16;
         if (tile === 'p') {
-          platform.create(x, y, 'platform').setScale(2).refreshBody();
+          platform.create(x, y, 'platform').setScale(1).refreshBody();
           this.physics.add.collider(player.sprite, platform);
         } else if (tile === 'F') {
           const fire = new Block(this, x, y, 'fire');
           this.physics.add.collider(player.sprite, fire.sprite, die, null, this);
+          fire.sprite.anims.play('fire');
         } else if (tile === 'E') {
           const flag = new Block(this, x, y, 'flag');
           this.physics.add.collider(player.sprite, flag.sprite, next_chunk, null, this);
         } else if (tile === 'J') {
           const boing = new Block(this, x, y, 'boing');
           this.physics.add.collider(player.sprite, boing.sprite, jump_boing, null, this);
+          boing.sprite.anims.play('slime');
         }
       }
     }
@@ -89,24 +119,34 @@ const Game = () => {
     });
 
     this.update = function () {
-      player.sprite.setVelocityX(0);
+      if (player.canMove) {
+        player.sprite.setVelocityX(0);
 
-      if (cursors.left.isDown || this.wasd.left.isDown) {
-        player.sprite.setVelocityX(-250);
-      } else if (cursors.right.isDown || this.wasd.right.isDown) {
-        player.sprite.setVelocityX(250);
-      }
+        if (cursors.left.isDown || this.wasd.left.isDown) {
+          player.sprite.setVelocityX(-250);
+          player.sprite.setFlipX(true);
+        } else if (cursors.right.isDown || this.wasd.right.isDown) {
+          player.sprite.setVelocityX(250);
+          player.sprite.setFlipX(false);
+        }
 
-      if (cursors.up.isDown || this.wasd.up.isDown) {
-        player.jump(1);
+        if (cursors.up.isDown || this.wasd.up.isDown) {
+          player.jump(1);
+        }
       }
     };
 
     function die(player, fire) {
+      player.canMove = false;
       player.setVelocityX(0);
       player.setVelocityY(0);
-      player.setX(16);
-      player.setY(450);
+      player.anims.play('death');
+      player.scene.time.delayedCall(1000, () => { // Delay for 1 second (1000ms)
+        player.setX(16);
+        player.setY(460);
+        player.anims.play('idle');
+        player.canMove = true;
+      }, [], this);
     }
 
     function next_chunk(player, flag) {
@@ -127,6 +167,7 @@ const Game = () => {
       this.sprite.displayWidth = 16;
       this.sprite.displayHeight = 16;
       this.sprite.setScale(1);
+      this.canMove = true; // Add canMove property
     }
 
     jump(strength) {
@@ -147,14 +188,6 @@ const Game = () => {
   return (
     <div className={styles.wrap}>
       <div id="game-container" className="game-container"></div>
-      <div>
-        <button className="button" onClick={() => { }}>Change Scene</button>
-        <button disabled={canMoveSprite} className="button" onClick={() => { }}>Toggle Movement</button>
-        <div className="spritePosition">Sprite Position:
-          <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-        </div>
-        <button className="button" onClick={() => { }}>Add New Sprite</button>
-      </div>
     </div>
   );
 }

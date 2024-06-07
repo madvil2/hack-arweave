@@ -26,7 +26,7 @@ function App() {
 
     return (
         <Router>
-            <div id="app">
+            <div>
                 <div className={styles.wrap}>
                     <header className={styles.header}>
                         <h1>BlockRun</h1>

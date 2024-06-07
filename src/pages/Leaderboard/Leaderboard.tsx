@@ -54,53 +54,57 @@ const Leaderboard = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Leaderboard</h1>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Time</th>
-            <th>Deaths</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboard.map((entry, index) => (
-            <tr key={index}>
-              <td>{entry.player}</td>
-              <td>{entry.time}</td>
-              <td>{entry.deaths}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2 className={styles.subheading}>Personal Stats</h2>
-      <div className={styles.personalStats}>
-        <p><strong>Player:</strong> {personalStats.player}</p>
-        <p><strong>Total Time:</strong> {personalStats.time}</p>
-        <p><strong>Total Deaths:</strong> {personalStats.deaths}</p>
-        <p><strong>Total Obstacles:</strong> {personalStats.obstacles}</p>
-        <p><strong>Additional Data:</strong> {personalStats.additionalData}</p>
-
-        <h3 className={styles.subheading}>Chunks</h3>
-        <table className={styles.table}>
+      <div className={styles.containerStyle}>
+        <h1 className={styles.headingStyle}>Leaderboard</h1>
+        <table className={styles.tableStyle}>
           <thead>
             <tr>
-              <th>Level</th>
-              <th>Time</th>
-              <th>Deaths</th>
+              <th className={styles.tableCellStyle}>Player</th>
+              <th className={styles.tableCellStyle}>Time</th>
+              <th className={styles.tableCellStyle}>Deaths</th>
             </tr>
           </thead>
           <tbody>
-            {personalStats.chunks.map((chunk, index) => (
+            {leaderboard.map((entry, index) => (
               <tr key={index}>
-                <td>{chunk.level}</td>
-                <td>{chunk.time}</td>
-                <td>{chunk.deaths}</td>
+                <td className={styles.tableCellStyle}>{entry.player}</td>
+                <td className={styles.tableCellStyle}>{entry.time}</td>
+                <td className={styles.tableCellStyle}>{entry.deaths}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className={styles.containerStyle}>
+        <h2 className={styles.headingStyle}>Personal Stats</h2>
+        <div className={styles.personalStats}>
+          <p><strong>Player:</strong> {personalStats.player}</p>
+          <p><strong>Total Time:</strong> {personalStats.time}</p>
+          <p><strong>Total Deaths:</strong> {personalStats.deaths}</p>
+          <p><strong>Total Obstacles:</strong> {personalStats.obstacles}</p>
+          <p><strong>Additional Data:</strong> {personalStats.additionalData}</p>
+
+          <h3 className={styles.headingStyle}>Chunks</h3>
+          <table className={styles.tableStyle}>
+            <thead>
+              <tr>
+                <th className={styles.tableCellStyle}>Level</th>
+                <th className={styles.tableCellStyle}>Time</th>
+                <th className={styles.tableCellStyle}>Deaths</th>
+              </tr>
+            </thead>
+            <tbody>
+              {personalStats.chunks.map((chunk, index) => (
+                <tr key={index}>
+                  <td className={styles.tableCellStyle}>{chunk.level}</td>
+                  <td className={styles.tableCellStyle}>{chunk.time}</td>
+                  <td className={styles.tableCellStyle}>{chunk.deaths}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
