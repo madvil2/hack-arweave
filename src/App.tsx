@@ -34,7 +34,7 @@ function App() {
                             <Link to="/">Home</Link>
                             <Link to="/leaderboard">Leaderboard</Link>
                             <Link to="/game">Game</Link>
-                            <Link to="/edit">Game</Link>
+                            <Link to="/edit">Edit</Link>
                         </nav>
                         <ConnectButton
                             accent="rgb(186,85,211)"

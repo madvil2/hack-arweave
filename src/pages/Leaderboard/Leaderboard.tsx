@@ -28,12 +28,28 @@ const mockLeaderboardData = [
   { player: 'BoldBeast', time: '2:20', deaths: 3 },
 ];
 
+// Mock data for personal stats; replace with actual data fetching logic
+const mockPersonalStats = {
+  player: 'madvil2',
+  time: '0:15',
+  deaths: 115,
+  chunks: [
+    { level: 1, time: '0:05', deaths: 50 },
+    { level: 2, time: '0:07', deaths: 40 },
+    { level: 3, time: '0:03', deaths: 25 },
+  ],
+  obstacles: 150,
+  additionalData: 'Any other data about the player...',
+};
+
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState(mockLeaderboardData);
+  const [personalStats, setPersonalStats] = useState(mockPersonalStats);
 
   useEffect(() => {
     // Replace this with actual data fetching logic
     setLeaderboard(mockLeaderboardData);
+    setPersonalStats(mockPersonalStats);
   }, []);
 
   return (
@@ -57,6 +73,35 @@ const Leaderboard = () => {
           ))}
         </tbody>
       </table>
+
+      <h2 className={styles.subheading}>Personal Stats</h2>
+      <div className={styles.personalStats}>
+        <p><strong>Player:</strong> {personalStats.player}</p>
+        <p><strong>Total Time:</strong> {personalStats.time}</p>
+        <p><strong>Total Deaths:</strong> {personalStats.deaths}</p>
+        <p><strong>Total Obstacles:</strong> {personalStats.obstacles}</p>
+        <p><strong>Additional Data:</strong> {personalStats.additionalData}</p>
+
+        <h3 className={styles.subheading}>Chunks</h3>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Time</th>
+              <th>Deaths</th>
+            </tr>
+          </thead>
+          <tbody>
+            {personalStats.chunks.map((chunk, index) => (
+              <tr key={index}>
+                <td>{chunk.level}</td>
+                <td>{chunk.time}</td>
+                <td>{chunk.deaths}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
